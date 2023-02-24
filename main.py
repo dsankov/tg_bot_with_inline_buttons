@@ -1,23 +1,24 @@
-import asyncio
-import logging
+from log2d import Log
 
 from button_bot import bot
+log = Log("main").logger
 
-async def main():
+def main():
+    """
+    main entry point of rotten Reversi bot
+    """
     
-    # logging.basicConfig(
-    #     level=logging.ERROR,
-    #     format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
-    #     filename=".log"
-    #     )
     
-    await bot.run_echo_bot()
+    log.info("starting main() entry point")
+    bot.run_echo_bot()
+    log.info("leaving main()")
+
+  
 
 
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except (KeyboardInterrupt, SystemExit):
-        pass
+    main()
+    
+
     
     

@@ -1,39 +1,64 @@
-from aiogram import types
-from button_bot.callback_datas import cell_CallbackData
-from button_bot.callback_datas import game_board, BOARD_SIZE
+from log2d import Log
+from telegram import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup
+)
 
+log = Log("keybd").logger
 
-
+BOARD_SIZE = 8
 WHITE_CIRCLE = '\u25ef'     # ◯
-BLACK_CIRCLE = '\u2b24'     # ⬤ 
-NUMS_IN_CIRCLE = {0:9450, 1:9312, 2:9313, 3:9314, 4:9315, 5:9316, 6:9317, 7:9318, 8:9319, 9:9320,
-                  10:9321, 11:9322, 12:9323, 13:9324, 14:9325, 15:9326, 16:9327, 17:9328, 18:9329, 19:9330
-                  }
+BLACK_CIRCLE = ' \u2b24 '     # ⬤ 
 
+def build_initial_game_markup(header_buttons=None, footer_buttons=None):
+    """
+    header_ and footer_buttons: List[List[InlineKeyboardButton]]
+    so may be multiline
+    """
+    
+    menu = []
+    if not header_buttons:
+        header_buttons = get_default_header_buttons()
+    menu.extend(header_buttons)
+    
+    game_board = get_game_board()
+    menu.extend(game_board)
+    
+    if not footer_buttons:
+        footer_buttons = get_default_footer_buttons()
+    menu.extend(footer_buttons)
 
+    log.info("initial game menu constructed")
+    return InlineKeyboardMarkup(menu)
+
+def get_default_header_buttons():
+    return []
+
+def get_default_footer_buttons():
+    footer_buttons = [
+        [InlineKeyboardButton("col1", callback_data="1.1"), InlineKeyboardButton("col2", callback_data="1.2")],
+        [InlineKeyboardButton("row 2", callback_data="2.0")]
+    ]
+    return footer_buttons
 
 def get_game_board():
-    board_markup = types.InlineKeyboardMarkup(row_width=BOARD_SIZE)
+    board = []
     for y in range(BOARD_SIZE):
-        row_markup = []
+        row = []
         for x in range(BOARD_SIZE):
-            if game_board[y][x] == 1:
-                cell_text = WHITE_CIRCLE 
-            elif game_board[y][x] == -1:
-                cell_text = BLACK_CIRCLE 
-            elif game_board[y][x] == 0:
-                cell_text = '\u2003' # space
-            else:
-                cell_text = chr(NUMS_IN_CIRCLE[game_board[y][x]])
-
-            cell_coord = 'cell:' + str(y) + ':' + str(x)
-            row_markup.append(
-                types.InlineKeyboardButton(
-                    cell_text, 
-                    callback_data=cell_CallbackData.new(y=y, x=x)
-                    )
+            row.append(InlineKeyboardButton(
+                text=BLACK_CIRCLE,
+                callback_data=f"cell:{y}:{x}"
                 )
+                       )
+        board.append(row)
+    return board
+    
 
-        board_markup.row(*row_markup)
 
-    return board_markup
+
+
+# NUMS_IN_CIRCLE = {0:9450, 1:9312, 2:9313, 3:9314, 4:9315, 5:9316, 6:9317, 7:9318, 8:9319, 9:9320,
+#                   10:9321, 11:9322, 12:9323, 13:9324, 14:9325, 15:9326, 16:9327, 17:9328, 18:9329, 19:9330
+#                   }
+

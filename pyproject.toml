@@ -9,6 +9,8 @@ packages = [{include = "button_bot"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 aiogram = "^2.25.1"
+python-telegram-bot = "13.14"
+log2d = "^0.0.18"
 
 
 [tool.poetry.group.dev.dependencies]

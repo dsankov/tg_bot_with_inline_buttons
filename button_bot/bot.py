@@ -1,41 +1,49 @@
-
-#from typing import Optional, Union
-
-from aiogram import Bot, types
-from aiogram.dispatcher import Dispatcher
-#from aiogram.dispatcher.filters import Text
-#from aiogram.utils.exceptions import BadRequest, MessageNotModified
-from icecream import ic
-
-#from button_bot.callback_datas import cell_CallbackData, game_board
-from button_bot.handlers.message_handlers import register_commands_handlers
-from button_bot.handlers.callback_handlers import register_callback_handlers
 from config import TOKEN
+from log2d import Log
+from telegram import (
+    BotCommand,
+)
+from telegram.ext import (
+    Updater,
+    Dispatcher,
 
-# logging.basicConfig(level=logging.INFO)
+)
+from button_bot.handlers.message_handlers import (
+    set_commands_handlers,
+    set_message_handlers,
+)
 
-
-async def run_echo_bot():
-    bot = Bot(token=TOKEN)
+log = Log("bot").logger
     
-    dp = Dispatcher(bot)
-    await set_default_commands(dp)
-    register_commands_handlers(dp)
-    register_callback_handlers(dp)
+def run_echo_bot():
+
+    log.info("bot started")
+    updater :Updater = Updater(token=TOKEN)
+    dispatcher :Dispatcher = updater.dispatcher
+    log.info(f"Updater & Dispatcher objects created")
     
-    try:
-        await dp.start_polling()
-    finally:
-        await dp.storage.close()
-        await dp.storage.wait_closed()
-        session = await bot.get_session()
-        await session.close() 
+    set_bot_commands(updater=updater)
+    set_commands_handlers(dispatcher=dispatcher)
+    set_message_handlers(dispatcher)
 
-
-async def set_default_commands(dp):
-    await dp.bot.set_my_commands([
-        types.BotCommand("start", "Запустить бота"),
-        types.BotCommand("help", "Помощь"),
-        types.BotCommand("board", "Доска"),
-    ])
-
+    updater.start_polling()
+    log.info("updeter polling started")
+    updater.idle()
+    log.info("bot stopped")
+    
+def set_bot_commands(updater: Updater):
+    """
+    register pre-defined bot commands from list bellow
+    """
+    
+    bot_commands = {
+        "start":    "start bot",
+        "help":     "get help",
+        "board":    "start reversi game"
+    }
+    bot_commands_list = [
+        BotCommand(command=cmd, description=desc) 
+            for (cmd, desc) in bot_commands.items()
+        ]
+    updater.bot.set_my_commands(bot_commands_list)    
+    log.info(f"bot commands set up: {list(bot_commands.keys())}")

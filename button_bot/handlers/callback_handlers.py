@@ -10,6 +10,7 @@ def register_callback_handlers(dp: Dispatcher):
         process_cell_pressed, 
         cell_CallbackData.filter()
         )
+    
 
 
 
@@ -30,7 +31,5 @@ async def process_cell_pressed(callback_query: types.CallbackQuery, callback_dat
     await callback_query.answer()
 
 
-# @dp.errors_handler(exception=MessageNotModified)
-async def board_not_modified_handler(update, error):
-    return True
+
 
