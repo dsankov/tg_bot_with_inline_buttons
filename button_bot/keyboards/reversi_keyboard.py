@@ -7,8 +7,10 @@ from telegram import (
 log = Log("keybd").logger
 
 BOARD_SIZE = 8
-WHITE_CIRCLE = '\u25ef'     # ◯
-BLACK_CIRCLE = ' \u2b24 '     # ⬤ 
+WHITE_BUTTON = '\u25ef'     # ◯
+BLACK_BUTTON = ' \u2b24 '     # ⬤ 
+EMPTY_BUTTON = "."
+
 
 def build_initial_game_markup(header_buttons=None, footer_buttons=None):
     """
@@ -41,20 +43,41 @@ def get_default_footer_buttons():
     ]
     return footer_buttons
 
+CELL_EMPTY = 0
+CELL_BLACK = -1
+CELL_WHITE = -2
+
 def get_game_board():
+    board_state = get_board()
+    board_size = len(board_state)
     board = []
-    for y in range(BOARD_SIZE):
+    for y in range(board_size):
         row = []
-        for x in range(BOARD_SIZE):
-            row.append(InlineKeyboardButton(
-                text=BLACK_CIRCLE,
-                callback_data=f"cell:{y}:{x}"
-                )
-                       )
+        for x in range(board_size):
+            if board_state[y][x] == CELL_EMPTY:
+                cell_text = EMPTY_BUTTON
+                cell_data = f"e:{y}:{x}"
+            elif board_state[y][x] == CELL_BLACK:        
+                cell_text = BLACK_BUTTON
+                cell_data = f"b:{y}:{x}"
+            elif board_state[y][x] == CELL_WHITE:        
+                cell_text = WHITE_BUTTON
+                cell_data = f"w:{y}:{x}"
+            else:     
+                cell_text = "?"
+                cell_data = f"e:{y}:{x}"
+            
+            cell_button = InlineKeyboardButton(text=cell_text, callback_data=cell_data)
+            row.append(cell_button)
         board.append(row)
     return board
     
-
+def get_board():
+    board = [[CELL_EMPTY] * BOARD_SIZE for _ in range(BOARD_SIZE)]
+    board[3][4], board[4][3] = CELL_BLACK, CELL_BLACK
+    board[3][3], board[4][4] = CELL_WHITE, CELL_WHITE
+    board[7][7] = 4
+    return board
 
 
 

@@ -47,3 +47,4 @@ def set_bot_commands(updater: Updater):
         ]
     updater.bot.set_my_commands(bot_commands_list)    
     log.info(f"bot commands set up: {list(bot_commands.keys())}")
+    
