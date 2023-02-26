@@ -3,13 +3,19 @@ from telegram import (
     InlineKeyboardButton,
     InlineKeyboardMarkup
 )
+from button_bot.games.reversi_game import get_initial_board_state, reversi_cells
 
 log = Log("keybd").logger
 
-BOARD_SIZE = 8
+
 WHITE_BUTTON = '\u25ef'     # ◯
 BLACK_BUTTON = ' \u2b24 '     # ⬤ 
 EMPTY_BUTTON = "."
+
+# NUMS_IN_CIRCLE = {0:9450, 1:9312, 2:9313, 3:9314, 4:9315, 5:9316, 6:9317, 7:9318, 8:9319, 9:9320,
+#                   10:9321, 11:9322, 12:9323, 13:9324, 14:9325, 15:9326, 16:9327, 17:9328, 18:9329, 19:9330
+#                   }
+
 
 
 def build_initial_game_markup(header_buttons=None, footer_buttons=None):
@@ -23,7 +29,7 @@ def build_initial_game_markup(header_buttons=None, footer_buttons=None):
         header_buttons = get_default_header_buttons()
     menu.extend(header_buttons)
     
-    game_board = get_game_board()
+    game_board = get_initial_gameboard()
     menu.extend(game_board)
     
     if not footer_buttons:
@@ -43,28 +49,29 @@ def get_default_footer_buttons():
     ]
     return footer_buttons
 
-CELL_EMPTY = 0
-CELL_BLACK = -1
-CELL_WHITE = -2
 
-def get_game_board():
-    board_state = get_board()
+def get_initial_gameboard():
+    board_state = get_initial_board_state()
+    board = generate_gameboard(board_state)
+    return board
+
+def generate_gameboard(board_state):
     board_size = len(board_state)
     board = []
     for y in range(board_size):
         row = []
         for x in range(board_size):
-            if board_state[y][x] == CELL_EMPTY:
+            if board_state[y][x] == reversi_cells.CELL_EMPTY:
                 cell_text = EMPTY_BUTTON
                 cell_data = f"e:{y}:{x}"
-            elif board_state[y][x] == CELL_BLACK:        
+            elif board_state[y][x] == reversi_cells.CELL_BLACK:        
                 cell_text = BLACK_BUTTON
                 cell_data = f"b:{y}:{x}"
-            elif board_state[y][x] == CELL_WHITE:        
+            elif board_state[y][x] == reversi_cells.CELL_WHITE:        
                 cell_text = WHITE_BUTTON
                 cell_data = f"w:{y}:{x}"
             else:     
-                cell_text = "?"
+                cell_text = "*"
                 cell_data = f"e:{y}:{x}"
             
             cell_button = InlineKeyboardButton(text=cell_text, callback_data=cell_data)
@@ -72,16 +79,6 @@ def get_game_board():
         board.append(row)
     return board
     
-def get_board():
-    board = [[CELL_EMPTY] * BOARD_SIZE for _ in range(BOARD_SIZE)]
-    board[3][4], board[4][3] = CELL_BLACK, CELL_BLACK
-    board[3][3], board[4][4] = CELL_WHITE, CELL_WHITE
-    board[7][7] = 4
-    return board
 
 
-
-# NUMS_IN_CIRCLE = {0:9450, 1:9312, 2:9313, 3:9314, 4:9315, 5:9316, 6:9317, 7:9318, 8:9319, 9:9320,
-#                   10:9321, 11:9322, 12:9323, 13:9324, 14:9325, 15:9326, 16:9327, 17:9328, 18:9329, 19:9330
-#                   }
 

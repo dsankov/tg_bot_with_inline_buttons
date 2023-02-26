@@ -1,8 +1,6 @@
 from log2d import Log
 from telegram import (
     Update,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup
 )
 
 from telegram.ext import (

@@ -12,6 +12,7 @@ from button_bot.handlers.message_handlers import (
     set_commands_handlers,
     set_message_handlers,
 )
+from button_bot.handlers.callback_handlers import set_callback_handlers
 
 log = Log("bot").logger
     
@@ -25,6 +26,7 @@ def run_echo_bot():
     set_bot_commands(updater=updater)
     set_commands_handlers(dispatcher=dispatcher)
     set_message_handlers(dispatcher)
+    set_callback_handlers(dispatcher)
 
     updater.start_polling()
     log.info("updeter polling started")

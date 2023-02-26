@@ -1,35 +1,42 @@
-from aiogram.dispatcher import Dispatcher
-from aiogram import types
-from icecream import ic
-from button_bot.callback_datas import cell_CallbackData
-from button_bot.keyboards.reversi_board import get_game_board
+from log2d import Log
+from telegram import (
+    Update,
+)
 
-def register_callback_handlers(dp: Dispatcher):
+from telegram.ext import (
+    Dispatcher,
+    CallbackQueryHandler,
+    CallbackContext,
+    CommandHandler,
+    MessageHandler,
+    Filters,
+)   
 
-    dp.register_callback_query_handler(
-        process_cell_pressed, 
-        cell_CallbackData.filter()
-        )
+from button_bot.keyboards.reversi_keyboard import build_initial_game_markup
+ 
+log = Log("call_handlers").logger
+
+
+def set_callback_handlers(dispatcher: Dispatcher):
+    board_cell_handler = CallbackQueryHandler(callback=process_cell_button)
+    dispatcher.add_handler(board_cell_handler)
+    log.info("cell button handler registred")
+
+def process_cell_button(update: Update, context: CallbackContext):
+    query = update.callback_query
+    data = query.data
+    log.info(f"data {data} received")
+    query.answer()
     
-
-
-
-
-# @dp.callback_query_handler(cell_CallbackData.filter())
-async def process_cell_pressed(callback_query: types.CallbackQuery, callback_data: dict):
-
-    y = callback_data['y']
-    x = callback_data['x']
-    ic(callback_data)
-    # game_board[int(y)][int(x)] = 1
     
-    await callback_query.message.edit_text(
-        text=f"pressed cell: {y}, {x}",
-        reply_markup=get_game_board()
-        )
+    initial_game_markup = build_initial_game_markup()
+    query.edit_message_text(text=f"{data}",reply_markup=initial_game_markup)
 
-    await callback_query.answer()
-
-
-
-
+    # context.bot.send_message(
+    #     chat_id=update.effective_chat.id,
+    #     text=f"{data}",
+    #     reply_markup=initial_game_markup
+    # )
+    # query.edit_message_reply_markup(reply_markup=initial_game_markup)
+    
+ 
