@@ -28,17 +28,13 @@ def set_commands_handlers(dispatcher: Dispatcher):
         )
     dispatcher.add_handler(help_command_handler)
     
-    board_command_handler = CommandHandler(
-        command="board", 
-        callback=process_board_command
-        )
-    dispatcher.add_handler(board_command_handler)
+    
 
     unknown_command_handler = MessageHandler(
         filters=Filters.command,
         callback=process_unknown_command
         )
-    dispatcher.add_handler(unknown_command_handler)
+    # dispatcher.add_handler(unknown_command_handler)
 
 def set_message_handlers(dispatcher: Dispatcher):
     echo_handler = MessageHandler(
@@ -72,14 +68,7 @@ def process_help_command(update: Update, context: CallbackContext):
         text="use /start to start the bot over\nuse /board to play reversi game"
     )
     
-def process_board_command(update: Update, context: CallbackContext):
-    log.info("/board command received")
-    initial_game_markup = build_initial_game_markup()
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text="game started",
-        reply_markup=initial_game_markup
-    )
+
     
 
     

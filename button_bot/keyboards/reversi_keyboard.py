@@ -1,9 +1,15 @@
 from log2d import Log
 from telegram import (
     InlineKeyboardButton,
-    InlineKeyboardMarkup
+    InlineKeyboardMarkup,
+    
 )
-from button_bot.games.reversi_game import get_initial_board_state, reversi_cells
+from button_bot.games.reversi_game import (
+    reversi_cell,
+    reversi_game
+    
+)
+     
 
 log = Log("keybd").logger
 
@@ -39,19 +45,47 @@ def build_initial_game_markup(header_buttons=None, footer_buttons=None):
     log.info("initial game menu constructed")
     return InlineKeyboardMarkup(menu)
 
+def build_game_markup(header_buttons=None, footer_buttons=None):
+    """
+    header_ and footer_buttons: List[List[InlineKeyboardButton]]
+    so may be multiline
+    """
+    
+    menu = []
+    if not header_buttons:
+        header_buttons = get_default_header_buttons()
+    menu.extend(header_buttons)
+    
+    game_board = get_gameboard()
+    menu.extend(game_board)
+    
+    if not footer_buttons:
+        footer_buttons = get_default_footer_buttons()
+    menu.extend(footer_buttons)
+
+    log.info("game board constructed")
+    return InlineKeyboardMarkup(menu)
+
+    
+
 def get_default_header_buttons():
     return []
 
 def get_default_footer_buttons():
     footer_buttons = [
-        [InlineKeyboardButton("col1", callback_data="1.1"), InlineKeyboardButton("col2", callback_data="1.2")],
-        [InlineKeyboardButton("row 2", callback_data="2.0")]
+        [InlineKeyboardButton("stop game", callback_data="stop_game"), InlineKeyboardButton(" - ", callback_data="1.2")],
+        [InlineKeyboardButton("- ", callback_data="2.0")]
     ]
     return footer_buttons
 
 
 def get_initial_gameboard():
-    board_state = get_initial_board_state()
+    board_state = reversi_game.get_initial_board_state()
+    board = generate_gameboard(board_state)
+    return board
+
+def get_gameboard():
+    board_state = reversi_game.get_board_state()
     board = generate_gameboard(board_state)
     return board
 
@@ -61,13 +95,13 @@ def generate_gameboard(board_state):
     for y in range(board_size):
         row = []
         for x in range(board_size):
-            if board_state[y][x] == reversi_cells.CELL_EMPTY:
+            if board_state[y][x] == reversi_cell.EMPTY:
                 cell_text = EMPTY_BUTTON
                 cell_data = f"e:{y}:{x}"
-            elif board_state[y][x] == reversi_cells.CELL_BLACK:        
+            elif board_state[y][x] == reversi_cell.BLACK:        
                 cell_text = BLACK_BUTTON
                 cell_data = f"b:{y}:{x}"
-            elif board_state[y][x] == reversi_cells.CELL_WHITE:        
+            elif board_state[y][x] == reversi_cell.WHITE:        
                 cell_text = WHITE_BUTTON
                 cell_data = f"w:{y}:{x}"
             else:     
