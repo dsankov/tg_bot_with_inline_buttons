@@ -48,13 +48,20 @@ def process_black_move_button(update: Update, context: CallbackContext):
     data = query.data
     mark, position = unpack_context(data)
     y, x = position
+    player = reversi_player.BLACK
     log.info(f"black move at x={x} y={y} received")
     
-    reversi_game.make_move(reversi_player.BLACK, position)
-    game_markup = build_game_markup()
-    query.edit_message_text(text=f"black move at x={x+1} y={y+1}\nnext move: white",reply_markup=game_markup)
+    move_score, _ = reversi_game.emulate_move(position, player)
+    if move_score > 0:
+        reversi_game.make_move(player, position)  
+        game_markup = build_game_markup()
+        query.edit_message_text(text=f"black move at x={x+1} y={y+1}\nnext move: white",reply_markup=game_markup)
+        return WHITE_MOVE
+    else:
+        game_markup = build_game_markup()
+        query.edit_message_text(text=f"black move at x={x+1} y={y+1} impossible\nnext move: black",reply_markup=game_markup)
+        return BLACK_MOVE
 
-    return WHITE_MOVE
 
 def process_white_move_button(update: Update, context: CallbackContext):
     query = update.callback_query
@@ -62,13 +69,19 @@ def process_white_move_button(update: Update, context: CallbackContext):
     data = query.data
     mark, position = unpack_context(data)
     y, x = position
+    player = reversi_player.WHITE
     log.info(f"white move at x={x} y={y} received")
     
-    reversi_game.make_move(reversi_player.WHITE, position)    
-    game_markup = build_game_markup()
-    query.edit_message_text(text=f"white move at x{x+1} y={y+1}\nnext move: black",reply_markup=game_markup)
-    
-    return BLACK_MOVE
+    move_score, _ = reversi_game.emulate_move(position, player)
+    if move_score > 0:
+        reversi_game.make_move(player, position)
+        game_markup = build_game_markup()
+        query.edit_message_text(text=f"white move at x{x+1} y={y+1}\nnext move: black",reply_markup=game_markup)
+        return BLACK_MOVE
+    else:
+        game_markup = build_game_markup()
+        query.edit_message_text(text=f"white move at x{x+1} y={y+1} impossible\nnext move: white",reply_markup=game_markup)
+        return WHITE_MOVE
 
 def process_not_empty_cell(update: Update, context: CallbackContext):
     query = update.callback_query

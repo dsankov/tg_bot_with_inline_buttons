@@ -81,17 +81,17 @@ def get_default_footer_buttons():
 
 def get_initial_gameboard():
     board_state = reversi_game.get_initial_board_state()
-    board = generate_gameboard(board_state)
-    return board
+    gameboard = generate_gameboard(board_state)
+    return gameboard
 
 def get_gameboard():
     board_state = reversi_game.get_board_state()
-    board = generate_gameboard(board_state)
-    return board
+    gameboard = generate_gameboard(board_state)
+    return gameboard
 
-def generate_gameboard(board_state):
+def generate_gameboard(board_state: list[list[reversi_cell]] ):
     board_size = len(board_state)
-    board = []
+    gameboard = []
     for y in range(board_size):
         row = []
         for x in range(board_size):
@@ -110,9 +110,10 @@ def generate_gameboard(board_state):
             
             cell_button = InlineKeyboardButton(text=cell_text, callback_data=cell_data)
             row.append(cell_button)
-        board.append(row)
-    return board
+        gameboard.append(row)
+    return gameboard
     
+
 
 
 
