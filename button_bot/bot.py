@@ -12,6 +12,7 @@ from telegram.ext import (
 from button_bot.handlers.message_handlers import (
     set_commands_handlers,
     set_message_handlers,
+    set_error_handler
 )
 from button_bot.handlers.callback_handlers import set_callback_handlers
 
@@ -28,11 +29,13 @@ def run_echo_bot():
     set_commands_handlers(dispatcher=dispatcher)
     set_message_handlers(dispatcher)
     set_callback_handlers(dispatcher)
+    set_error_handler(dispatcher)
 
     updater.start_polling()
     log.info("updeter polling started")
     updater.idle()
     log.info("bot stopped")
+    
     
 def set_bot_commands(updater: Updater):
     """

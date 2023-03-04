@@ -12,12 +12,13 @@ class reversi_player(Enum):
 
 class reversiGame:
     def __init__(self) -> None:
-        self.board = [[reversi_cell.EMPTY] * BOARD_SIZE for _ in range(BOARD_SIZE)]
+        pass
         
     def get_initial_board_state(self):
         """
         returns -> List[List[reversi_cell]]:
         """    
+        self.board = [[reversi_cell.EMPTY] * BOARD_SIZE for _ in range(BOARD_SIZE)]
         self.board[3][4], self.board[4][3] = reversi_cell.BLACK, reversi_cell.BLACK
         self.board[3][3], self.board[4][4] = reversi_cell.WHITE, reversi_cell.WHITE
 
@@ -37,4 +38,16 @@ class reversiGame:
     def availiable_moves(self):
         return []
                 
+    def get_score(self) -> dict[reversi_player: int]:
+        black_score, white_score = 0, 0
+        for y in range(BOARD_SIZE):
+            for x in range(BOARD_SIZE):
+                if self.board[y][x] == reversi_cell.BLACK:
+                    black_score += 1
+                elif self.board[y][x] == reversi_cell.WHITE:
+                    white_score += 1
+        return {
+            reversi_player.BLACK: black_score,
+            reversi_player.WHITE: white_score
+        }    
 reversi_game = reversiGame()

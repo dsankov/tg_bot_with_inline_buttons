@@ -80,5 +80,12 @@ def process_unknown_command(update: Update, context: CallbackContext):
     )
     
 
+def set_error_handler(dispatcher: Dispatcher):
+    dispatcher.add_error_handler(error_handler)
+    
+def error_handler(update: Update, context: CallbackContext):
+    log.error("error", exc_info=context.error)
+    
+    return None
 # async def board_not_modified_handler(update, error):
 #     return True

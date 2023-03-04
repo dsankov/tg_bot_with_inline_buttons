@@ -15,7 +15,7 @@ log = Log("keybd").logger
 
 
 WHITE_BUTTON = '\u25ef'     # ◯
-BLACK_BUTTON = ' \u2b24 '     # ⬤ 
+BLACK_BUTTON = '\u2b24'   # ⬤ 
 EMPTY_BUTTON = "."
 
 # NUMS_IN_CIRCLE = {0:9450, 1:9312, 2:9313, 3:9314, 4:9315, 5:9316, 6:9317, 7:9318, 8:9319, 9:9320,
@@ -63,7 +63,7 @@ def build_game_markup(header_buttons=None, footer_buttons=None):
         footer_buttons = get_default_footer_buttons()
     menu.extend(footer_buttons)
 
-    log.info("game board constructed")
+    # log.info("game board constructed")
     return InlineKeyboardMarkup(menu)
 
     

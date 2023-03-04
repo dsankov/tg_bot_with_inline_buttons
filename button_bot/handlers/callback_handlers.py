@@ -2,6 +2,9 @@ from log2d import Log
 from telegram import (
     Update,
 )
+from telegram.error import BadRequest
+
+
 from typing import List
 
 from telegram.ext import (
@@ -76,15 +79,35 @@ def process_not_empty_cell(update: Update, context: CallbackContext):
     log.info(f"click at x={x} y={y} received")
     
     game_markup = build_game_markup()
-    query.edit_message_text(text=f"cell at x={x+1} y={y+1} not empty\ntry anain",
-                            reply_markup=game_markup
-                            )
-    
+    try:
+        query.edit_message_text(text=f"cell at x={x+1} y={y+1} not empty\ntry anain",
+                                reply_markup=game_markup
+                                )
+    except BadRequest:
+        log.warning("message not modified")
+            
 def stop_handler(update: Update, context: CallbackContext):
     log.info("stop command")
+    
     return ConversationHandler.END
 
-
+def stop_button_handler(update: Update, context: CallbackContext):
+    log.info(f"stop button clicled")
+    query = update.callback_query
+    query.answer()
+    
+    game_markup = build_game_markup()
+    score = reversi_game.get_score()
+    text = f"Black: {score[reversi_player.BLACK]}\nWhite: {score[reversi_player.WHITE]}"
+    query.edit_message_text(text=text,
+                            reply_markup=game_markup
+                            )
+    reversi_game.get_initial_board_state()
+    return ConversationHandler.END
+    
+def log_fallback(update: Update, context: CallbackContext):
+    log.info("falback detected")
+        
 def set_callback_handlers(dispatcher: Dispatcher):
 
     board_command_handler = CommandHandler(
@@ -97,25 +120,30 @@ def set_callback_handlers(dispatcher: Dispatcher):
         states={
             BLACK_MOVE: [
                 CallbackQueryHandler(process_black_move_button, pattern="^e"),
-                CallbackQueryHandler(process_not_empty_cell, pattern="^(b|w)")
+                CallbackQueryHandler(process_not_empty_cell, pattern="^(b|w)"),
+                CallbackQueryHandler(stop_button_handler, pattern="^stop_game$"),
+                
             ],
             WHITE_MOVE: [
                 CallbackQueryHandler(process_white_move_button, pattern="^e"),
-                CallbackQueryHandler(process_not_empty_cell, pattern="^(b|w)")
+                CallbackQueryHandler(process_not_empty_cell, pattern="^(b|w)"),
+                CallbackQueryHandler(stop_button_handler, pattern="^stop_game$"),
             ],
             GAME_FINISHED: [
                 CallbackQueryHandler(process_black_move_button),
             ],
         },
         fallbacks=[
-            board_command_handler,
-            CommandHandler("stop", stop_handler),
+            # board_command_handler,
+            # CommandHandler("stop", stop_handler),
+            
+            CallbackQueryHandler(callback=log_fallback),
         ]
     )
     dispatcher.add_handler(game_handler)
     log.info("game handler registred")
     
-    
+
     
     
  
