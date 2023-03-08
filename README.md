@@ -1,3 +1,4 @@
 # reversi game telegram bot
-` /board to start new reversi game`
+`/board` 
+to start new reversi game
 
