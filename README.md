@@ -1,1 +1,3 @@
-# tg_bot_with_inline_buttons
+# reversi game telegram bot
+` /board to start new reversi game`
+
